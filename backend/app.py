@@ -1,21 +1,31 @@
 import os
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-
-# Load app-level config settings
+from dotenv import load_dotenv 
+# Import the configuration settings
 import config
-
 # MongoDB setup and utility functions
 from services import db_service
-
 # User-related routes (modularized via blueprint)
 from routes.user_routes import user_bp
+# Game-related routes
+from routes.game_routes import game_bp
+
 
 # --- App Factory ---
 def create_app():
-    # Initialize Flask app and point to frontend static files
-    app = Flask(__name__, static_folder="../frontend")
+    
+    # NEW FIX: Explicitly set the static URL path to '/' and point to the frontend folder.
+    # This tells Flask to serve resources inside '../frontend' directly from the root URL.
+    app = Flask(
+        __name__, 
+        static_folder="../frontend", 
+        static_url_path="/"
+    )
 
+    # Load environment variables (from .env)
+    load_dotenv() 
+    
     # Pull in settings from config.py
     app.config.from_object(config)
 
@@ -26,8 +36,9 @@ def create_app():
     db_service.init_db()
 
     # --- Register Blueprints ---
-    # Mount user routes at /api/user
     app.register_blueprint(user_bp, url_prefix='/api/user')
+    app.register_blueprint(game_bp, url_prefix='/api/game')
+
 
     # --- Health Check Route ---
     @app.route("/api/status", methods=["GET"])

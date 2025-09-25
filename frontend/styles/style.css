@@ -1,0 +1,165 @@
+/* --- Global Styles and Background --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* Soft gradient background similar to the image provided */
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Helper class to hide screens */
+.hidden {
+    display: none !important;
+}
+
+/* --- Card/Container Styling --- */
+.main-screen {
+    width: 100%;
+    max-width: 400px; /* Limits the width of the card */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.85); /* Semi-transparent white background */
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px); /* Soft blur effect */
+    text-align: center;
+}
+
+.auth-card {
+    /* Specific styling to match the rounded structure of the image */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+    color: #4a4a4a;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* --- Input Field Styling --- */
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #8ec5fc;
+    outline: none;
+}
+
+.input-label {
+    display: block;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* --- Button Styling --- */
+button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.main-button {
+    background-color: #6a1b9a; /* Purple color for primary actions */
+    color: white;
+}
+
+.main-button:hover:not(:disabled) {
+    background-color: #7b1fa2;
+}
+
+.secondary-button {
+    background-color: #f0f0f0;
+    color: #6a1b9a;
+    border: 1px solid #6a1b9a;
+}
+
+.secondary-button:hover:not(:disabled) {
+    background-color: #e0e0e0;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.skip-link {
+    background: none;
+    border: none;
+    color: #6a1b9a;
+    text-decoration: underline;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.skip-link:hover {
+    color: #4a148c;
+}
+
+/* --- Specific Game Elements --- */
+.app-icon {
+    font-size: 40px;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    background: white;
+    border-radius: 50%;
+    margin: -70px auto 20px; /* Positioned above the card */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 3px solid #8ec5fc;
+}
+
+/* Feedback and Error Text */
+.error-text {
+    color: #e74c3c;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.feedback-text {
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    min-height: 20px; /* Reserve space to prevent layout jump */
+}
+
+.attempts-text {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #34495e;
+}
+
+.range-info {
+    font-style: italic;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}

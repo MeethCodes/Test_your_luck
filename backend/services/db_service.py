@@ -2,6 +2,9 @@ import pymongo
 import datetime
 import sys
 
+# for converting the user_id string to a MongoDB object type.
+from bson.objectid import ObjectId
+
 # Import the configuration settings
 import config
 
@@ -118,3 +121,82 @@ def insert_user(username, password_hash, is_guest):
     
     # Return the unique MongoDB ID (required by the user_routes.py logic)
     return result.inserted_id
+
+def save_game_history(user_id, attempts, min_range, max_range, target_number):
+    """
+    Saves the record of a completed game session to the Game_History collection.
+    
+    Args:
+        user_id (str): ID of the user (must be converted to ObjectId).
+        attempts (int): Number of guesses taken.
+        min_range (int), max_range (int): The range used for the game.
+        target_number (int): The number the user was guessing.
+
+    Returns:
+        ObjectId: The ID of the inserted game record.
+    """
+    global game_collection
+    
+    # Convert user_id string back to ObjectId for database referencing
+    game_record = {
+        "user_id": ObjectId(user_id),
+        "attempts_taken": attempts,
+        "score_points": 1,  # Based on your plan, 1 point per win
+        "range_min": min_range,
+        "range_max": max_range,
+        "target_number": target_number,
+        "game_won": True,
+        "finished_at": datetime.datetime.utcnow()
+    }
+    
+    result = game_collection.insert_one(game_record)
+    return result.inserted_id
+# backend/services/db_service.py (Add this function to the CRUD section)
+
+def get_leaderboard(limit=10):
+    """
+    Retrieves the top N best scores (lowest attempts) using MongoDB Aggregation.
+    Joins Game_History records with the associated User documents.
+    """
+    global game_collection
+    
+    # Define the Aggregation Pipeline
+    pipeline = [
+        # 1. Sort: Find the best scores first (ascending attempts_taken)
+        { "$sort": { "attempts_taken": 1, "finished_at": 1 } },
+        
+        # 2. Limit: Take only the top N scores (e.g., top 10)
+        { "$limit": limit },
+        
+        # 3. Lookup (Join): Fetch the user details from the 'Users' collection
+        #    This connects the game score (user_id) to the user's name.
+        {
+            "$lookup": {
+                "from": "Users",           # The collection to join with
+                "localField": "user_id",   # Field from the Game_History collection
+                "foreignField": "_id",     # Field from the Users collection
+                "as": "user_info"          # Output array name for the joined documents
+            }
+        },
+        
+        # 4. Unwind: Deconstruct the user_info array (created by $lookup)
+        #    We assume only one user matches the ID, so we flatten the array.
+        { "$unwind": "$user_info" },
+        
+        # 5. Project: Shape the final output, including the username
+        {
+            "$project": {
+                "_id": 0,                     # Exclude the internal game _id
+                "username": "$user_info.username", # Pull the username from the joined data
+                "is_guest": "$user_info.is_guest", # Check if player was a guest
+                "attempts_taken": 1,
+                "range_min": 1,
+                "range_max": 1,
+                "finished_at": 1
+            }
+        }
+    ]
+    
+    # Execute the pipeline and convert the cursor results to a list
+    leaderboard_data = list(game_collection.aggregate(pipeline))
+    return leaderboard_data
