@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv 
 # Import the configuration settings
-import config
+from . import config
 # MongoDB setup and utility functions
 from services import db_service
 # User-related routes (modularized via blueprint)

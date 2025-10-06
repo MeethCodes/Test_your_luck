@@ -1,12 +1,9 @@
 import pymongo
 import datetime
 import sys
-
+from . import config
 # for converting the user_id string to a MongoDB object type.
 from bson.objectid import ObjectId
-
-# Import the configuration settings
-import config
 
 # Global variables to hold the connected objects
 client = None
@@ -23,14 +20,16 @@ def _create_ttl_index():
     global user_collection
     
     try:
-        # Index on 'last_activity', expires after the configured seconds (e.g., 3600)
-        # ONLY applies where is_guest is True.
+        #flags teh users log of the game, if the user exceeds inactivity threshold
+        #defined by gust ttl seconds
         user_collection.create_index(
             [("last_activity", pymongo.ASCENDING)],
             expireAfterSeconds=config.GUEST_TTL_SECONDS,
             partialFilterExpression={"is_guest": True}
         )
         print("Database Setup: TTL Index on 'Users' collection created successfully. (Guest auto-deletion enabled)")
+    #use speific exeptions
+    #use if else instead
     except Exception as e:
         # This handles cases where the index might already exist or a configuration error occurred.
         print(f"Warning: Could not create TTL index. Error: {e}")
@@ -59,6 +58,7 @@ def init_db():
         sys.exit(1)
     except Exception as e:
         print(f"An unexpected error occurred during connection: {e}")
+        #why is exit needed if its going to throw an erroe anyway?
         sys.exit(1)
         
     # 2. Access Database and Collections
@@ -72,12 +72,12 @@ def init_db():
 # --- CORE CRUD FUNCTIONS ---
 
 
-def find_user_by_username(username):
+def find_user_by_username(username : str) -> dict|None:           
     """
-    Retrieves a single user document based on the username.
+    Retrieves a single user's Metadata based on the username.
     
     Returns:
-        dict or None: The user document if found, otherwise None.
+        dict or None: ditionary containing user meta data or returns None
     """
     global user_collection
     
