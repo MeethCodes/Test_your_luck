@@ -3,7 +3,7 @@
 // Store user data retrieved from the backend after login/signup/guest play
 let CURRENT_USER_ID = null;
 let CURRENT_USERNAME = null;
-let API_BASE_URL = "http://127.0.0.1:5000/api"; // Base URL for all API calls
+let API_BASE_URL = "https://test-your-luck-rpc6.onrender.com/api"; // Base URL for all API calls
 
 // Store the secret number locally only after the game starts (for debugging/internal use)
 // NOTE: For security, the user doesn't strictly need this, but we'll use it to visualize state.
