@@ -2,57 +2,60 @@ import os
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv 
+
 # Import the configuration settings
-from . import config
+from . import config 
+
 # MongoDB setup and utility functions
-from .services import db_service
-from .routes.user_routes import user_bp
-from .routes.game_routes import game_bp
+from .services import db_service # Relative import
+
+# User-related routes (modularized via blueprint)
+from .routes.user_routes import user_bp # Relative import
+# Game-related routes
+from .routes.game_routes import game_bp # Relative import
 
 
-# --- App Factory ---
-def create_app():
-    
-    # NEW FIX: Explicitly set the static URL path to '/' and point to the frontend folder.
-    # This tells Flask to serve resources inside '../frontend' directly from the root URL.
-    app = Flask(
-        __name__, 
-        static_folder="../frontend", 
-        static_url_path="/"
-    )
+# --- 1. Load Config and Init Database ---
 
-    # Load environment variables (from .env)
-    load_dotenv() 
-    
-    # Pull in settings from config.py
-    app.config.from_object(config)
+# Load environment variables (from .env)
+load_dotenv() 
 
-    # Allow frontend to talk to backend (CORS setup)
-    CORS(app)
+# --- 2. Create and Configure Flask App (Directly) ---
 
-    # Connect to MongoDB and set up TTL index for cleanup
-    db_service.init_db()
+# NEW FIX: Remove the create_app() function and define the 'app' object directly.
+app = Flask(
+    __name__, 
+    static_folder="../frontend", 
+    static_url_path="/"
+)
 
-    # --- Register Blueprints ---
-    app.register_blueprint(user_bp, url_prefix='/api/user')
-    app.register_blueprint(game_bp, url_prefix='/api/game')
+# Pull in settings from config.py
+app.config.from_object(config)
+
+# Allow frontend to talk to backend (CORS setup)
+CORS(app)
+
+# Connect to MongoDB and set up TTL index for cleanup
+db_service.init_db()
+
+# --- 3. Register Blueprints ---
+
+app.register_blueprint(user_bp, url_prefix='/api/user')
+app.register_blueprint(game_bp, url_prefix='/api/game')
 
 
-    # --- Health Check Route ---
-    @app.route("/api/status", methods=["GET"])
-    def get_status():
-        """Quick ping to verify API is up."""
-        return jsonify({"status": "API is online! 🚀"})
+# --- 4. Define Routes ---
 
-    # --- Serve Frontend ---
-    @app.route("/")
-    def serve_frontend():
-        """Delivers the main frontend HTML file."""
-        return send_from_directory(app.static_folder, "index.html")
+@app.route("/api/status", methods=["GET"])
+def get_status():
+    """Quick ping to verify API is up."""
+    return jsonify({"status": "API is online! 🚀"})
 
-    return app
+@app.route("/")
+def serve_frontend():
+    """Delivers the main frontend HTML file."""
+    return send_from_directory(app.static_folder, "index.html")
 
-# Run the app locally (dev mode)
+# --- 5. Run the App Locally (No change to this block) ---
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True, port=5000)
