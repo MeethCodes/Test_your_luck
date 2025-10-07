@@ -1,7 +1,7 @@
 import pymongo
 import datetime
 import sys
-from . import config
+from .. import config
 # for converting the user_id string to a MongoDB object type.
 from bson.objectid import ObjectId
 
