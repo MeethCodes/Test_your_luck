@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request, jsonify, session
 import random
-from services import db_service 
+from ..services import db_service
 
 # Create a Blueprint instance for game-related routes
 game_bp = Blueprint('game_bp', __name__)

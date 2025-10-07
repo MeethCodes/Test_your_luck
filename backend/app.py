@@ -5,11 +5,9 @@ from dotenv import load_dotenv
 # Import the configuration settings
 from . import config
 # MongoDB setup and utility functions
-from services import db_service
-# User-related routes (modularized via blueprint)
-from routes.user_routes import user_bp
-# Game-related routes
-from routes.game_routes import game_bp
+from .services import db_service
+from .routes.user_routes import user_bp
+from .routes.game_routes import game_bp
 
 
 # --- App Factory ---

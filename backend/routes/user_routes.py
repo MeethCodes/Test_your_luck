@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services import db_service
+from ..services import db_service
 import bcrypt
 import random
 import string
